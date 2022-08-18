@@ -1,0 +1,34 @@
+version: "2"
+services:
+  nginx:
+    build: nginx
+    ports:
+      - "80:80"
+    links:
+      - api
+      - frontend
+  api:
+    build: api
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./env/mysql.env
+    links:
+      - prod_db:db
+  frontend:
+    build: frontend
+    environment:
+      - NODE_ENV=production
+    links:
+      - api
+  prod_db:
+    image: tutum/mysql:5.6
+    environment:
+      - ON_CREATE_DB=production_db
+    env_file:
+      - ./env/mysql.env
+    volumes:
+      - "neverwrote-prod-db-data:/var/lib/mysql"
+volumes:
+  neverwrote-prod-db-data:
+    external: false
